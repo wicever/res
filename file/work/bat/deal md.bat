@@ -1,41 +1,43 @@
 @echo off
-rem ´¦ÀíMinDocÖÐµ¼³öµÄmdÎÄ¼þ
-rem ½«µ±Ç°Ä¿Â¼ÏÂµÄ"¹¤×÷.zip"¡¢"Éú»î.zip"½âÑ¹
-rem ½«½âÑ¹µÄÎÄ¼þ¼ÐÖÐµÄmdÎÄ¼þÒÆµ½¸ùÄ¿Â¼
-rem ÔÙÑ¹Ëõ
+rem å¤„ç†MinDocä¸­å¯¼å‡ºçš„mdæ–‡ä»¶
+rem å°†å½“å‰ç›®å½•ä¸‹çš„"å·¥ä½œ.zip"ã€"ç”Ÿæ´».zip"è§£åŽ‹
+rem å°†è§£åŽ‹çš„æ–‡ä»¶å¤¹ä¸­çš„mdæ–‡ä»¶ç§»åˆ°æ ¹ç›®å½•
+rem å†åŽ‹ç¼©
 
 set "CURRENT_DIR=%cd%"
 echo %CURRENT_DIR%
 
-IF EXIST "%CURRENT_DIR%\¹¤×÷.zip" (
-  start /wait winrar x "%CURRENT_DIR%\¹¤×÷.zip" "%CURRENT_DIR%\¹¤×÷\"  
-  del "¹¤×÷.zip"
-  cd %CURRENT_DIR%\¹¤×÷\      
+IF EXIST "%CURRENT_DIR%\å·¥ä½œ.zip" (
+  start /wait winrar x "%CURRENT_DIR%\å·¥ä½œ.zip" "%CURRENT_DIR%\å·¥ä½œ\"  
+  del "å·¥ä½œ.zip"
+  cd %CURRENT_DIR%\å·¥ä½œ\      
   ::for /r . %%a in (*.md not README.md) do if exist "%%a" move /y "%%a".
-  ::½«markdownÏÂËùÓÐ³ýÁËREADME.mdÍâmdÎÄ¼þÒÆµ½µ±Ç°Ä¿Â¼
+  ::å°†markdownä¸‹æ‰€æœ‰é™¤äº†README.mdå¤–mdæ–‡ä»¶ç§»åˆ°å½“å‰ç›®å½•
   for /f "delims=" %%a in ('dir /a-d/b/s *.md') do (
     echo "%%~nxa" | find "README.md" >nul || move "%%a"
   )
-  move "%CURRENT_DIR%\¹¤×÷\markdown\README.md"
+  move "%CURRENT_DIR%\å·¥ä½œ\markdown\README.md"
   cd ..
-  start /wait winrar a "¹¤×÷.zip" "¹¤×÷\"
-  rd /s/q "%CURRENT_DIR%\¹¤×÷"
+  start /wait winrar a "å·¥ä½œ.zip" "å·¥ä½œ\"
+  rd /s/q "%CURRENT_DIR%\å·¥ä½œ"
 )
 
-IF EXIST "%CURRENT_DIR%\Éú»î.zip" (
-  start /wait winrar x "%CURRENT_DIR%\Éú»î.zip" "%CURRENT_DIR%\Éú»î\"  
-  del "Éú»î.zip"
-  cd %CURRENT_DIR%\Éú»î\      
+IF EXIST "%CURRENT_DIR%\ç”Ÿæ´».zip" (
+  start /wait winrar x "%CURRENT_DIR%\ç”Ÿæ´».zip" "%CURRENT_DIR%\ç”Ÿæ´»\"  
+  del "ç”Ÿæ´».zip"
+  cd %CURRENT_DIR%\ç”Ÿæ´»\      
   ::for /r . %%a in (*.md not README.md) do if exist "%%a" move /y "%%a".
-  ::½«markdownÏÂËùÓÐ³ýÁËREADME.mdÍâmdÎÄ¼þÒÆµ½µ±Ç°Ä¿Â¼
+  ::å°†markdownä¸‹æ‰€æœ‰é™¤äº†README.mdå¤–mdæ–‡ä»¶ç§»åˆ°å½“å‰ç›®å½•
   for /f "delims=" %%a in ('dir /a-d/b/s *.md') do (
     echo "%%~nxa" | find "README.md" >nul || move "%%a"
   )
-  move "%CURRENT_DIR%\Éú»î\markdown\README.md"
+  move "%CURRENT_DIR%\ç”Ÿæ´»\markdown\README.md"
   cd ..
-  start /wait winrar a "Éú»î.zip" "Éú»î\"
-  rd /s/q "%CURRENT_DIR%\Éú»î"
+  start /wait winrar a "ç”Ÿæ´».zip" "ç”Ÿæ´»\"
+  rd /s/q "%CURRENT_DIR%\ç”Ÿæ´»"
 )
 
 rem goto :EOF 
-rem pause
+pause
+del "å·¥ä½œ.zip"
+del "ç”Ÿæ´».zip"
