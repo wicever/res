@@ -1,4 +1,5 @@
 @echo off
+rem version:v1.0
 echo.
 echo      MySQL数据库备份
 

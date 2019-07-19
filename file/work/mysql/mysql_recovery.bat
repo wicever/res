@@ -1,4 +1,5 @@
 @echo off
+rem version:v1.0
 
 ::pause
 echo.

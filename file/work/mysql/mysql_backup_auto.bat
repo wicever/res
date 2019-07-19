@@ -1,4 +1,6 @@
 @echo off
+rem version:v1.0
+
 set "year=%date:~0,4%"
 set "month=%date:~5,2%"
 set "day=%date:~8,2%"
@@ -15,12 +17,13 @@ if "%hour_ten%" == " " (
    set "timename=%year%%month%%day%%hour_ten%%hour_one%"
 )
 
-set /p mysqlHost=请输入服务器地址：
+::set /p mysqlHost=请输入服务器地址：
 
-if not defined mysqlHost set mysqlHost=127.0.0.1
-echo 准备备份服务器%mysqlHost%的数据库。
+::if not defined mysqlHost set mysqlHost=127.0.0.1
+set mysqlHost=127.20.95.126
+::echo 准备备份服务器%mysqlHost%的数据库。
 
 ::pause
 echo.
 echo 
-mysqldump -h %mysqlHost% -uroot -p --databases mindoc_db > mindoc_%mysqlHost%_db_%timename%.sql
+mysqldump -h %mysqlHost% -uroot -p1234 --databases mindoc_db > mindoc_db(%mysqlHost%)_%timename%.sql
