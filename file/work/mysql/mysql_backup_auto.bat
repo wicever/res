@@ -17,13 +17,16 @@ if "%hour_ten%" == " " (
    set "timename=%year%%month%%day%%hour_ten%%hour_one%"
 )
 
-::set /p mysqlHost=ÇëÊäÈë·þÎñÆ÷µØÖ·£º
+::set /p mysqlHost=è¯·è¾“å…¥æœåŠ¡å™¨åœ°å€ï¼š
 
 ::if not defined mysqlHost set mysqlHost=127.0.0.1
-set mysqlHost=127.20.95.126
-::echo ×¼±¸±¸·Ý·þÎñÆ÷%mysqlHost%µÄÊý¾Ý¿â¡£
+set mysqlHost=172.20.95.126
+::echo å‡†å¤‡å¤‡ä»½æœåŠ¡å™¨%mysqlHost%çš„æ•°æ®åº“ã€‚
 
 ::pause
 echo.
 echo 
-mysqldump -h %mysqlHost% -uroot -p1234 --databases mindoc_db > mindoc_db(%mysqlHost%)_%timename%.sql
+mysqldump -h %mysqlHost% -uroot -pJiWen@MySql --databases mindoc_db > ./DB_Backup/mindoc_db(%mysqlHost%)_%timename%.sql
+
+::åˆ é™¤å¤‡ä»½15å¤©ä»¥ä¸Šçš„æ–‡ä»¶
+forfiles /P %CURRENT_DIR%\DB_Backup /S /C "cmd /c del @path" /D -15
