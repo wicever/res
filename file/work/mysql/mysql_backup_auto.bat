@@ -22,7 +22,7 @@ if "%hour_ten%" == " " (
 ::if not defined mysqlHost set mysqlHost=127.0.0.1
 set mysqlHost=172.20.95.126
 ::echo 准备备份服务器%mysqlHost%的数据库。
-
+@echo off>nul 2>./DB_Backup/%mysqlHost%_%timename%_err.txt 3>./DB_Backup/%mysqlHost%_%timename%_log.txt 4>./DB_Backup/%mysqlHost%_%timename%_log.txt
 ::pause
 echo.
 echo 
