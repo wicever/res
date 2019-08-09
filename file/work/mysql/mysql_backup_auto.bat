@@ -1,6 +1,10 @@
 @echo off
 rem version:v1.0
 
+::set "CURRENT_DIR=%cd%"
+set "CURRENT_DIR=D:\Develop\mindoc_windows_amd64\mindoc_db_backup"
+echo %CURRENT_DIR%
+
 set "year=%date:~0,4%"
 set "month=%date:~5,2%"
 set "day=%date:~8,2%"
@@ -16,7 +20,6 @@ if "%hour_ten%" == " " (
    :: type nul > %year%%month%%day%%hour_ten%%hour_one%%minute%%second%.txt
    set "timename=%year%%month%%day%%hour_ten%%hour_one%"
 )
-
 ::set /p mysqlHost=请输入服务器地址：
 
 ::if not defined mysqlHost set mysqlHost=127.0.0.1
@@ -28,5 +31,5 @@ echo.
 echo 
 mysqldump -h %mysqlHost% -uroot -pJiWen@MySql --databases mindoc_db > ./DB_Backup/mindoc_db(%mysqlHost%)_%timename%.sql
 
-::删除备份15天以上的文件
-forfiles /P %CURRENT_DIR%\DB_Backup /S /C "cmd /c del @path" /D -15
+::删除备份8天以上的文件
+forfiles /P  %CURRENT_DIR%\DB_Backup /S /C "cmd /c del @path" /D -8
