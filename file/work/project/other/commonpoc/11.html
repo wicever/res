@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<style>
+.tablebox {
+    height: 312px;
+    overflow: hidden;
+    position: relative;
+    margin: 100px auto;    
+}
+.tbl-body {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+</style>
+</head>
+<body>
+<div class="tablebox">
+        <div class="tbl-body">
+            <table border="0" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td>1aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>2aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>3aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>4aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>5aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>6aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>7aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                    <tr>
+                        <td>aaaaa</td>
+                        <td>aaaaa</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+autoMove(8);
+function autoMove(n){
+    var className = "tbl-body";
+    var MyMarhq = '';
+    clearInterval(MyMarhq);
+    $('.'+className+' tbody').html($('.'+className+' tbody').html()+$('.'+className+' tbody').html());
+    $('.'+className).css('top', '0');
+    var tblTop = 0;
+    var speedhq = 50; // 数值越大越慢
+    var outerHeight = $('.'+className+' tbody').find("tr").outerHeight();
+    function Marqueehq(){
+        if(tblTop <= -outerHeight*n){
+            tblTop = 0;
+        } else {
+            tblTop -= 1;
+        }
+        $('.'+className+'').css('top', tblTop+'px');
+    }
+    MyMarhq = setInterval(Marqueehq,speedhq);
+    // 鼠标移上去取消事件
+    $("."+className+" tbody").hover(function (){
+        clearInterval(MyMarhq);
+    },function (){
+        clearInterval(MyMarhq);
+        MyMarhq = setInterval(Marqueehq,speedhq);
+    })
+
+}
+
+</script>
+
+</body>
+</html>

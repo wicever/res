@@ -1,0 +1,113 @@
+/**
+ * <p> 海康会易通:客户端唤醒、会议通知消息提醒
+ * 
+ * @author <a href="mailto:songjw@smartdot.com.cn">JiWen</a>
+ * @version 1.0, 2019-09-17
+ */
+
+
+.hikMessageHint{
+  height:165px;
+  width:390px;
+  border:1px solid #d9d9d9;
+  box-shadow: 0 0 4px 0 ;
+  background:#fff;
+  position: fixed;
+  /*bottom: 15px;*/
+  right: 15px;
+  z-index:999;
+}
+
+.hikMessageHint[active=false]{
+  display: none;
+}
+
+.hikMessageHint[active=true]{
+  display: none;
+}
+
+.hintInfoTitle{
+  background: #F8F8F8;
+  height: 35px;
+  line-height: 35px;
+}
+
+.hintInfoTitle .closeHint{
+  cursor: pointer;
+}
+.hintInfoTitle span{
+  font-family: PingFangSC-Regular;
+  font-size: 12px;
+  color: #8F8F8F;
+  letter-spacing: 0.08px;
+  margin: 0 15px;
+}
+.hintInfoContent{
+  padding:10px;
+}
+.hintInfoIcon{
+  width:60px;
+  height:50px;
+  margin-top: 23px;
+}
+.messageInfoContent{
+  font-family: PingFangSC-Regular;
+  width:260px;
+  font-size: 16px;
+  color: #4A4A4A;
+  letter-spacing: 0.11px;
+  line-height: 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  margin-left:20px;
+  cursor: pointer;
+}
+.messageInfoContent{position: relative; line-height: 32px; max-height: 96px;overflow: hidden;}
+.messageInfoContent::after{content: "..."; position: absolute; bottom: 0; right: 0; padding-left: 40px;
+  background: -webkit-linear-gradient(left, transparent, #fff 55%);
+  background: -o-linear-gradient(right, transparent, #fff 55%);
+  background: -moz-linear-gradient(right, transparent, #fff 55%);
+  background: linear-gradient(to right, transparent, #fff 55%);
+}
+
+.pull-left{float:left;}
+
+/*图标引用*/
+@font-face {
+  font-family: 'icon';
+  src:  url('../fonts/icon.eot?i9lwke');
+  src:  url('../fonts/icon.eot?i9lwke#iefix') format('embedded-opentype'),
+  url('../fonts/icon.ttf?i9lwke') format('truetype'),
+  url('../fonts/icon.woff?i9lwke') format('woff'),
+  url('../fonts/icon.svg?i9lwke#icon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="extend-shipin-leader"], [class*=" extend-shipin-leader"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.extend-shipin_2:before {
+  content: "\e908";
+  color: #1296db;
+}
+.extend-shipin-leader:before {
+  content: "\e909";
+  color: #1296db;
+}

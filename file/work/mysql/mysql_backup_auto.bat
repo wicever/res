@@ -23,13 +23,14 @@ if "%hour_ten%" == " " (
 ::set /p mysqlHost=请输入服务器地址：
 
 ::if not defined mysqlHost set mysqlHost=127.0.0.1
-set mysqlHost=172.20.95.126
+::set mysqlHost=172.20.95.126
+set mysqlHost=db.mindoc.com
 ::echo 准备备份服务器%mysqlHost%的数据库。
 @echo off>nul 2>./DB_Backup/%mysqlHost%_%timename%_err.txt 3>./DB_Backup/%mysqlHost%_%timename%_log.txt 4>./DB_Backup/%mysqlHost%_%timename%_log.txt
 ::pause
 echo.
 echo 
-mysqldump -h %mysqlHost% -uroot -pJiWen@MySql --databases mindoc_db > ./DB_Backup/mindoc_db(%mysqlHost%)_%timename%.sql
+mysqldump -h %mysqlHost% -umindoc -pmindoc --databases mindoc_db > ./DB_Backup/mindoc_db(%mysqlHost%)_%timename%.sql
 
 ::删除备份8天以上的文件
 forfiles /P  %CURRENT_DIR%\DB_Backup /S /C "cmd /c del @path" /D -8
