@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence 
+    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+  version="2.0">
+
+  <!-- 产品工程实体类配置 -->
+  
+  <persistence-unit name="appEntityManager" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <non-jta-data-source>appDataSource</non-jta-data-source>
+
+    <!-- 项目工程实体类列表 -->
+    <!-- 配置样例
+    <class>com.hd.rcugrc.project.sample.entity.SampleEntity</class> -->
+    
+    <class>com.hd.rcugrc.project.oa.portal.skinconfig.entity.SkinConfigEntity</class>
+    <class>com.hd.rcugrc.project.oa.portal.portalviewmsg.entity.ViewMsgEntity</class>
+    <class>com.hd.rcugrc.project.oa.portal.appusedrecord.entity.AppUsedRecordEntity</class>
+
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+  </persistence-unit>
+</persistence>

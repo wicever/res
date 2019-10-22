@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/util 
+    http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <!-- 产品工程定时任务触发器配置 -->
+  
+  <util:list id="productSchedulerTriggers">
+    <!-- 样例
+    <ref bean="productSampleTrigger" /> -->
+     <!-- OA定制关于年假自动计算任务 start-->
+        <ref bean="annualleaveCalcTrigger" />
+        <!-- OA定制关于年假自动计算任务 end-->
+        <!-- OA定制收文审批超时提醒任务 start-->
+        <ref bean="timeOverRemindTrigger" />
+        <!-- OA定制收文审批超时提醒任务 end-->
+        <!-- OA 定制自动归档 -->
+        <ref bean="autoArchiveJobTrigger"/>
+        <ref bean="trustorInvalid"/>
+        <!-- OA 定制自动归档 -->
+        <!-- OA 定制消息提醒 -->
+        <ref bean="messageRemindJobTrigger" />
+        <!-- OA 定制消息提醒 -->
+        <!-- OA 定时抓取Domino OA数据 -->
+        <ref bean="timingGetOldOaDispathJobTrigger" />
+        <!-- OA 定时抓取Domino OA数据 -->     <!-- UM组织机构人员同步定时任务 start-->
+        <ref bean="organizationStaffTrigger" />
+        <!-- <ref bean="trustorInvalid"/> -->
+        <!-- UM组织机构人员同步定时任务 end-->
+         <!--华电国际部外事系统定时任务start-->
+        <!-- <ref bean="AbroadApplyTrigger" /> -->
+        <!-- 华电国际部外事系统定时任务 end-->     
+        <ref bean="numberConfigInitTrigger" /> 
+        <!-- 新UM组织机构人员同步定时任务 start-->
+        <ref bean="umtoorgStaffTrigger" /> 
+        <!-- 新UM组织机构人员同步定时任务 end-->
+		<!--人员组织同步 -->
+		<ref bean="groupUserSynTrigger" />
+		
+		<!-- 登陆日志数据信息推送 -->
+		<ref bean="oaSendLogInfo" />
+    
+        <!-- WE首页链接访问量数据推送 -->
+        <ref bean="appUsedDate" />
+
+  </util:list>
+
+  <!-- WE首页链接访问量数据推送 start-->
+  <bean id="appUsedDate" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="WE首页链接访问量数据推送"></property>
+    <property name="jobDetail" ref="appUsedDateJobDetail" />
+    <property name="cronExpression" value="0 0 0/1 * * ?" /> <!-- 每小时同步一次 -->
+  </bean>
+  <bean id="appUsedDateJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="appUsedDateJob" />
+    <property name="targetMethod" value="run" />
+    <property name="concurrent" value="false" />
+    <property name="durable" value="true" />
+    <property name="shouldRecover" value="true" />
+  </bean>
+ 
+  <bean id="appUsedDateJob" class="com.hd.rcugrc.project.oa.portal.appusedrecord.quartz.AppUsedDateJob">
+    <property name="runAsAccount" value="hdadmin"/>
+    <property name="appUsedRecordService" ref="appUsedRecordService" />
+  </bean> 
+
+  <!-- 人员组织同步任务开始 start-->
+  <bean id="groupUserSynTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="人员组织同步"></property>
+    <property name="jobDetail" ref="groupUserSynJobDetail" />
+    <property name="cronExpression" value="0 */10 * * * ?" /> <!-- 每十分钟同步一次 -->
+  </bean>
+  <bean id="groupUserSynJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="groupUserSynJob" />
+    <property name="targetMethod" value="run" />
+    <property name="concurrent" value="false" />
+    <property name="durable" value="true" />
+    <property name="shouldRecover" value="true" />
+  </bean>
+ 
+  <bean id="groupUserSynJob" class="com.hd.rcugrc.product.oa.cloudSyn.quartz.OrgUserSynJob">
+    <property name="runAsAccount" value="hdadmin"/>
+    <property name="orgUserSynService" ref="orgUserSynYuService" />
+  </bean> 
+  
+   <!-- OA 定制年假自动计算 start-->
+  <bean id="annualleaveCalcTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="年假自动计算"></property>
+    <property name="jobDetail" ref="annualleaveCalcJobDetail" />
+    <property name="cronExpression" value="0 0 0 1 1 ?" />
+  </bean>
+
+  <bean id="annualleaveCalcJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="annualleaveCalcJob" />
+    <property name="targetMethod" value="run" />
+    <property name="concurrent" value="false" />
+    <property name="durable" value="true" />
+    <property name="shouldRecover" value="true" />
+  </bean>
+
+  <bean id="annualleaveCalcJob" class="com.hd.rcugrc.product.oa.annualleaveconfig.quartz.AnnualleaveCalcJob">
+    <property name="runAsAccount" value="hdadmin"/>
+    <property name="OaHolidayMaintainService" ref="hd-product-oa-oaholidaymaintain-service" />
+    <property name="AnnualLeaveConfigService" ref="hd-product-oa-annualLeaveConfigServiceImpl-service" />
+  </bean> 
+  <!-- OA 定制年假自动计算 end-->
+    <!-- OA 收文审批超时提醒 每天中午12点执行 start-->
+   <bean id="timeOverRemindTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+     <property name="description" value="收文审批超时提醒"></property>
+     <property name="jobDetail" ref="timeOverRemindJobDetail" />
+     <property name="cronExpression" value="0 0 18 * * ? " />
+   </bean>
+ 
+   <bean id="timeOverRemindJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+     <property name="targetBean" value="timeOverRemindJob" />
+     <property name="targetMethod" value="run" />
+     <property name="concurrent" value="false" />
+     <property name="durable" value="true" />
+     <property name="shouldRecover" value="true" />
+   </bean>
+
+   <bean id="timeOverRemindJob" class="com.hd.rcugrc.project.oa.oaReceiptManage.quartz.TimeOverRemindJob">
+     <property name="runAsAccount" value="hdadmin"/>
+     <property name="workflowService" ref="hdWorkflowService" />
+     <property name="userInfoService" ref="cachedHdUserInfoService" />
+   </bean> 
+  <!-- OA 收文审批超时提醒 end-->
+  
+  <!-- OA 定制自动归档 -->
+  <bean id="autoArchiveJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="OA_定制自动归档"></property>
+    <property name="jobDetail" ref="autoArchiveJobDetail"></property>
+    <property name="cronExpression" value="0 0 1 1/1 * ?"></property> 
+    </bean>
+  
+  <bean id="autoArchiveJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="autoArchiveJob"/>
+    <property name="targetMethod" value="run"></property>
+    <property name="concurrent" value="false"></property>
+    <property name="durable" value="true"></property>
+    <property name="shouldRecover" value="true"></property>
+  </bean>
+  
+  <bean id="autoArchiveJob" class="com.hd.rcugrc.product.oa.archive.quartz.AutoArchiveJob">
+    <property name="runAsAccount" value="hdadmin"/>
+    <property name="archiveService" ref="hd-ArchiveService"></property>
+  </bean>
+  <!-- OA 定制自动归档 -->
+  
+  <!-- OA 定制消息提醒 -->
+  <bean id="messageRemindJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="消息提醒任务"></property>
+    <property name="jobDetail" ref="messageRemindJobDetail"></property>
+    <property name="cronExpression" value="0 */2 * * * ?"></property>
+  </bean>
+  
+  <bean id="messageRemindJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="messageRemindJob"/>
+    <property name="targetMethod" value="run"></property>
+    <property name="concurrent" value="false"></property>
+    <property name="durable" value="true"></property>
+    <property name="shouldRecover" value="true"></property>
+  </bean>
+  <!--  -->
+  <bean id="messageRemindJob" class="com.hd.rcugrc.product.oa.messageremind.quartz.MessageRemindJob">
+    <property name="runAsAccount" value="hdadmin"/>
+    <property name="oaMessageRemindService" ref="hd-product-message-remind-service" />
+    <property name="lanxinService" ref="hd-LanXinService" />
+    <property name="mailService" ref="hd-MailService" />
+    <property name="dictService" ref="hdToolsDictService" />
+  </bean>
+  
+  <!-- OA 定制消息提醒 -->
+  <!-- OA 定时抓取Domino OA数据 start-->
+  <bean id="timingGetOldOaDispathJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+      <property name="description" value="定时抓取Domino OA数据"></property>
+    <property name="jobDetail" ref="timingGetOldOaDispathJobDetail"></property>
+    <property name="cronExpression" value="0,10 * * * * ?"></property>
+  </bean>
+  
+  <bean id="timingGetOldOaDispathJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="timingGetOldOaDispathJob"/>
+    <property name="targetMethod" value="run"></property>
+    <property name="concurrent" value="false"></property>
+    <property name="durable" value="true"></property>
+    <property name="shouldRecover" value="true"></property>
+  </bean>
+
+  <bean id="timingGetOldOaDispathJob" class="com.hd.rcugrc.project.oainterface.oldoa.task.TimingGetOldoaDispatch">
+     <property name="runAsAccount" value="hdadmin"/>
+     <property name="getOldoaDispatchService" ref="hd-GetOldoaDispatchService" />
+  </bean>
+  <!-- OA 定时抓取Domino OA数据 end-->
+   
+  <!-- OA UM组织机构人员同步定时任务 start-->
+   <bean id="organizationStaffTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="UM同步定时任务"></property>
+    <property name="jobDetail" ref="organizationStaffJobDetail" />
+    <property name="cronExpression" value="0 0 12 * * ? " />
+  </bean>
+
+  <bean id="organizationStaffJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="organizationStaffJob" />
+    <property name="targetMethod" value="run" />
+    <property name="concurrent" value="false" />
+    <property name="durable" value="true" />
+    <property name="shouldRecover" value="true" />
+  </bean>
+
+  <bean id="organizationStaffJob" class="com.hd.rcugrc.project.oainterface.um.quartz.OrganizationStaffJob">
+     <property name="runAsAccount" value="hdadmin"/>
+     <property name="umService" ref="hd-umService" /> 
+  </bean>  
+  <!-- OA  UM组织机构人员同步定时任务 end-->
+  
+  <!-- OA 华电国际部外事系统定时任务 start-->
+  <bean id="AbroadApplyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+      <property name="description" value="华电国际部外事系统定时任务"></property>
+    <property name="jobDetail" ref="AbroadApplyJobDetail" />
+    <property name="cronExpression" value="0 0 12 * * ?" />
+  </bean>
+
+  <bean id="AbroadApplyJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="AbroadApplyJob" />
+    <property name="targetMethod" value="run" />
+    <property name="concurrent" value="false" />
+    <property name="durable" value="true" />
+    <property name="shouldRecover" value="true" />
+  </bean>
+
+  <bean id="AbroadApplyJob" class="com.hd.rcugrc.project.oainterface.receipt.quartz.AbroadApplyJob">
+     <property name="runAsAccount" value="hdadmin"/>
+  </bean>   
+  <!-- OA 华电国际部外事系统定时任务 end-->
+  
+  <!-- OA 编号跨年初始化start-->
+   <bean id="numberConfigInitTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="编号跨年初始化"></property>
+    <property name="jobDetail" ref="numberConfigInitJobDetail" />
+    <property name="cronExpression" value="0 0 5 1 1 ?" />
+  </bean>
+  <bean id="numberConfigInitJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="numberConfigInitJob" />
+    <property name="targetMethod" value="run" />
+    <property name="concurrent" value="false" />
+    <property name="durable" value="true" />
+    <property name="shouldRecover" value="true" />
+  </bean>
+   <bean id="numberConfigInitJob" class="com.hd.rcugrc.product.oa.numberConfiguration.task.NumberConfigInitJob">
+     <property name="runAsAccount" value="hdadmin"/>
+     <property name="numberConfigurationService" ref="hd-product-number-configuration-service" />
+  </bean>
+  <!-- OA 编号跨年初始化 start-->
+  
+    <!-- OA 定制委托待办超时处理 -->
+  <bean id="trustorInvalid" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="OA委托待办超时处理"></property>
+    <property name="jobDetail" ref="trustorInvalidDetail"></property>
+    <property name="cronExpression" value="0 0 3 * * ?"></property> 
+    </bean>
+  
+  <bean id="trustorInvalidDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="trustorInvalidJob"/>
+    <property name="targetMethod" value="run"></property>
+    <property name="concurrent" value="false"></property>
+    <property name="durable" value="true"></property>
+    <property name="shouldRecover" value="true"></property>
+  </bean>
+  
+  <bean id="trustorInvalidJob" class="com.hd.rcugrc.product.oa.common.quartz.trustorInvalidChangeTodoList">
+    <property name="runAsAccount" value="hdadmin"/>
+    <property name="oaListService" ref="hd-product-oa-common-service"/>
+  </bean>
+  <!--OA 新UM组织机构人员同步定时任务 start-->
+   <bean id="umtoorgStaffTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="新UM同步定时任务"></property>
+    <property name="jobDetail" ref="umtoorgStaffJobDetail" />
+    <property name="cronExpression" value="1-1 0 0 1/1 * ? *" />
+  </bean>
+
+  <bean id="umtoorgStaffJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="umtoorgStaffJob" />
+    <property name="targetMethod" value="run" />
+    <property name="concurrent" value="false" />
+    <property name="durable" value="true" />
+    <property name="shouldRecover" value="true" />
+  </bean>
+
+  <bean id="umtoorgStaffJob" class="com.hd.rcugrc.project.oainterface.um.quartz.NewOrganizationStaffJob">
+     <property name="runAsAccount" value="hdadmin"/>
+     <property name="umService" ref="hd-umService" /> 
+  </bean>  
+  <!--OA 新UM组织机构人员同步定时任务 end-->
+  <!-- OA 定制委托待办超时处理 -->
+  
+  <!-- OA 登录数据信息推送 start -->
+   <bean id="oaSendLogInfo" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    <property name="description" value="登陆日志数据信息推送"></property>
+    <property name="jobDetail" ref="oaSendLogInfoJobDetail" />
+    <property name="cronExpression" value="0 0/1 * * * ? *" />
+  </bean>
+
+  <bean id="oaSendLogInfoJobDetail" class="com.hd.rcugrc.core.scheduling.quartz.BeanInvokingJobDetailFactoryBean">
+    <property name="targetBean" value="oaSendLogInfoJob" />
+    <property name="targetMethod" value="run" />
+    <property name="concurrent" value="false" />
+    <property name="durable" value="true" />
+    <property name="shouldRecover" value="true" />
+  </bean>
+
+  <bean id="oaSendLogInfoJob" class="com.hd.rcugrc.product.oa.allinonenet.quartz.SendLogInfoJob">
+     <property name="runAsAccount" value="hdadmin"/>
+     <property name="oaLogInfoService" ref="oaLogInfoService" /> 
+  </bean>  
+  <!-- OA 登录数据信息推送 end -->
+    
+</beans>

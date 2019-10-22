@@ -1,0 +1,1153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:repository="http://www.springframework.org/schema/data/repository"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd	    
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/data/jpa
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+    http://www.springframework.org/schema/data/repository
+    http://www.springframework.org/schema/data/repository/spring-repository.xsd
+    http://www.springframework.org/schema/util 
+    http://www.springframework.org/schema/util/spring-util.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- service dao 配置文件 -->
+    <!-- 注入Dao -->
+    <!-- 通用dao注入，扫描 平台 目录下的 dao -->
+    <jpa:repositories base-package="com.hd.rcugrc.product"
+                      factory-class="com.hd.rcugrc.data.jpa.GenericRepositoryFactoryBean"
+                      entity-manager-factory-ref="entityManagerFactory"
+                      transaction-manager-ref="transactionManager" repository-impl-postfix="Impl">
+        <repository:include-filter type="regex"
+                                   expression="com\.hd\.rcugrc\.product\..*\.dao\..*Dao"/>
+    </jpa:repositories>
+
+
+	<tx:annotation-driven order="100" />
+	<!-- 注入service -->
+	<!-- 样例：将服务接口实现层进行注入，【bean id="hd-base-demo-service】在dwr-platform.xml使用 
+		（1）bean id="hd-product-demo-service"：因服务层接口实现继承了基类，并且基类继承了JdbcDaoSupport。因此需要注入数据源 
+		<bean id="hd-product-demo-service" class="com.hd.rcugrc.product.opposite.service.impl.DemoServiceImpl"> 
+		<property name="dataSource" ref="appDataSource" /> </bean> -->
+	
+	<bean id="orgUserSynService" class="com.hd.rcugrc.product.oa.cloud.service.impl.OrgUserSynServiceImpl">
+		
+	</bean>
+	
+	<!-- 同步组织机构 start -->
+	<tx:annotation-driven order="100" />
+    <!-- 注入service -->
+    <!-- 样例：将服务接口实现层进行注入，【bean id="hd-base-demo-service】在dwr-platform.xml使用 
+      （1）bean id="hd-product-demo-service"：因服务层接口实现继承了基类，并且基类继承了JdbcDaoSupport。因此需要注入数据源 
+      <bean id="hd-product-demo-service" class="com.hd.rcugrc.product.opposite.service.impl.DemoServiceImpl"> 
+      <property name="dataSource" ref="appDataSource" /> </bean> -->
+    
+    <bean id="orgUserSynYuService" class="com.hd.rcugrc.product.oa.cloudSyn.service.impl.OrgUserSynServiceImpl">
+      
+    </bean>
+    <bean id="groupSynLogService" class="com.hd.rcugrc.product.oa.cloudSyn.service.impl.GroupSynLogServiceImpl">
+    
+    </bean>
+    
+        <!-- 同步组织结构数据 -->
+    <bean id="groupSynchroService"
+          class="com.hd.rcugrc.product.oa.cloudSyn.service.impl.GroupSynchroServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 同步人员数据 -->
+    <bean id="userSynchroService"
+          class="com.hd.rcugrc.product.oa.cloudSyn.service.impl.UserSynchroServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+	
+	<!-- 同步组织机构 end -->
+	
+    <tx:annotation-driven order="100"/>
+    <!-- 注入service -->
+    <!-- 样例：将服务接口实现层进行注入，【bean id="hd-base-demo-service】在dwr-platform.xml使用
+        （1）bean id="hd-product-demo-service"：因服务层接口实现继承了基类，并且基类继承了JdbcDaoSupport。因此需要注入数据源
+        <bean id="hd-product-demo-service" class="com.hd.rcugrc.product.opposite.service.impl.DemoServiceImpl">
+        <property name="dataSource" ref="appDataSource" /> </bean> -->
+    <!-- 用于服务启动时实行SQL脚本 -->
+    <bean id="upgradeDbListener" class="com.hd.rcugrc.product.oa.upgradedb.UpgradeDbListener"
+          scope="singleton" init-method="init"></bean>
+
+
+    <!-- 公共代码service注入 -->
+    <bean id="hd-product-oa-common-service"
+          class="com.hd.rcugrc.product.oa.common.service.impl.OaBaseFunctionServiceImpl">
+        <property name="entityInfoService" ref="hdToolsEntityInfoService"/>
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="formBeanDao" ref="hdFormBeanDao"/>
+        <property name="attachmentService" ref="attachmentService"/>
+        <property name="listEntryWorkflowInfoHandler" ref="hdWorkflowListinfoWorkflowHandler"/>
+        <property name="dictService" ref="hdToolsDictService"/>
+        <property name="oaDocNumberService" ref="hd-product-oa-doc-number-service"/>
+        <property name="sendToReadService" ref="hdFormSendToReadService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="hdWorkflowService" ref="hdPlatformWorkflowService"/>
+    </bean>
+    
+    <!-- 一网通办公共代码service注入 -->
+    <bean id="hd-product-oa-aioncommon-service" 
+    	class="com.hd.rcugrc.product.oa.allinonenet.common.service.impl.AionBaseFunctionServiceImpl">
+      <property name="itemProcessService" ref="itemProcessService"/>
+      <property name="itemMilestoneInstService" ref="hd-product-oa-itemMilestoneInst-service"/>
+      <property name="userInfoService" ref="cachedHdUserService" />
+      <property name="todoListService" ref="hdTodolistService" />
+      <property name="thirdNoticeLogService" ref="hd-product-oa-thirdNotice-service" />
+      <property name="cetcNoticeEnable" value="${cetc.notice.enable}"></property>
+    </bean>
+    
+    <!-- 我的预约service注入 -->
+    <bean id="myAppointmentServiceListImpl"
+		class="com.hd.rcugrc.product.oa.allinonenet.myAppointment.service.impl.MyAppointmentServiceListImpl">
+	</bean>
+    
+	<bean id="hd-product-oa-myappointment-service"
+		class="com.hd.rcugrc.product.oa.allinonenet.myAppointment.service.impl.MyAppointmentServiceImpl">
+	</bean>
+
+    <!-- 系统配置修改aop配置 -->
+    <aop:config proxy-target-class="false">
+        <aop:aspect ref="configOperAop"> <!--指定切面-->
+            <!--定义切点-->
+            <aop:pointcut id="getSysConfigOperPointcut"
+                          expression="@annotation(com.hd.rcugrc.product.oa.annotation.SysConfigLog)"></aop:pointcut>
+            <!--定义连接点-->
+            <aop:around pointcut-ref="getSysConfigOperPointcut" method="around"></aop:around>
+        </aop:aspect>
+    </aop:config>
+
+    <bean id="commonUtilsService"
+          class="com.hd.rcugrc.product.oa.common.service.impl.CommonUtilsServiceImpl">
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="roleInfoService" ref="hdRoleInfoService"/>
+        <property name="dictService" ref="hdToolsDictService"/>
+        <property name="baseUtilsService" ref="baseUtilsService"/>
+        <property name="entityInfoService" ref="hdToolsEntityInfoService"/>
+        <property name="formInfoService" ref="hdFormInfoService"/>
+        <property name="fileInfoService" ref="hdFileInfoService"/>
+    </bean>
+    <bean id="baseUtilsService"
+          class="com.hd.rcugrc.product.oa.common.service.impl.BaseUtilsServiceImpl">
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="dictService" ref="hdToolsDictService"/>
+    </bean>
+    <bean id="hdFileInfoService"
+          class="com.hd.rcugrc.product.oa.common.service.impl.HdFileInfoServiceImpl">
+        <!-- <property name="dataSource" ref="appDataSource" /> -->
+    </bean>
+    <bean id="defaultBusinessListService"
+          class="com.hd.rcugrc.product.oa.common.service.impl.DefaultBusinessListServiceImpl">
+        <!-- <property name="dataSource" ref="appDataSource" /> -->
+    </bean>
+
+    <!-- 加载自定义控件 -->
+    <bean id="hd-data-idGenerateS-service" class="com.hd.rcugrc.data.ids.IdGenerateServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- OA产品 移动接口 -->
+    <bean id="processService" class="com.hd.rcugrc.platform.rest.mobile.service.impl.ProcessTaskServiceImpl">
+
+    </bean>
+
+    <!-- OA产品 移动接口 -->
+    <bean id="workFlowForMobileService"
+          class="com.hd.rcugrc.platform.rest.mobile.service.impl.WorkFlowForMobileServiceImpl">
+
+    </bean>
+
+    <!-- OA列表服务 -->
+    <bean id="oa-list-service"
+          class="com.hd.rcugrc.product.oa.common.service.impl.OaListServiceImpl">
+        <property name="formInfoService" ref="hdFormInfoService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="formBeanDao" ref="hdFormBeanDao"/>
+        <property name="listEntryWorkflowInfoHandler" ref="hdWorkflowListinfoWorkflowHandler"/>
+        <property name="listEntryAppInfoHandler" ref="hdWorkflowListinfoAppHandler"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="dictService" ref="hdToolsDictService"/>
+        <property name="roleInfoService" ref="cachedHdRoleInfoService"/>
+        <property name="hierarchyManagerService" ref="hierarchyManagerService"/>
+        <property name="docConfigService" ref="hd-product-oa-doc-config-service"/>
+        <property name="oaBaseFunctionService" ref="hd-product-oa-common-service"/>
+        <property name="todoListService" ref="hdTodolistService"/>
+    </bean>
+
+    <!-- 业务类型servcie注入 -->
+    <bean id="hd-product-oa-doc-business-type-service"
+          class="com.hd.rcugrc.product.oa.docbusinesstype.service.impl.DocBusinessTypeServiceImpl">
+    </bean>
+
+    <!-- 工作日历 -->
+    <bean id="hd-product-oa-workingcalendarsub-service"
+          class="com.hd.rcugrc.product.oa.workingcalendar.service.impl.WorkingCalendarSubServiceImpl">
+    </bean>
+
+    <bean id="hd-product-oa-workingcalendarmain-service"
+          class="com.hd.rcugrc.product.oa.workingcalendar.service.impl.WorkingCalendarMainServiceImpl">
+        <property name="workingCalendarSubService" ref="hd-product-oa-workingcalendarsub-service"/>
+    </bean>
+    <!-- 呈批事项管理servcie注入 -->
+    <bean id="hd-product-oa-doc-deliver-approval-service"
+          class="com.hd.rcugrc.product.oa.deliverapprovalmanage.service.impl.DeliverApprovalManageImpl">
+    </bean>
+    <!-- 红头配置servcie注入 -->
+    <bean id="hd-product-oa-redhead-config-service"
+          class="com.hd.rcugrc.product.oa.redheadConfig.service.impl.RedheadConfigServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="mutableUserInfoService" ref="cachedHdUserService"/>
+    </bean>
+    <!-- 关联文档servcie注入 -->
+    <bean id="hd-product-oa-relateddoc-service"
+          class="com.hd.rcugrc.product.oa.relateddoc.service.impl.RelatedDocServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 关联文档选择servcie注入 -->
+    <bean id="hd-product-oa-relateddocchoose-service"
+          class="com.hd.rcugrc.product.oa.relateddoc.service.impl.RelatedDocChooseServiceImpl">
+
+    </bean>
+    <!-- 阅知日志service注入 -->
+    <bean id="hd-product-oa-sendtoread-service"
+          class="com.hd.rcugrc.product.oa.oasendtoreadlog.service.impl.SendToReadLogServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="sendToReadService" ref="hdFormSendToReadService"/>
+        <property name="readService" ref="readService"/>
+        <property name="oaMsgPushService" ref="hd-product-oa-msg-push-service"/>
+        <property name="AgendaConfigService" ref="hd-product-agendaConfig-service"/>
+        <property name="modelDesignService" ref="hdToolsModelDesignService"/>
+        <property name="toDoCenterService" ref="hd-product-todocenter-service" />
+        <property name="flowService" ref="hdFlowService" />
+    </bean>
+    
+    <!-- 业务属性service注入 -->
+    <bean id="hd-product-oa-serviceattr-service"
+          class="com.hd.rcugrc.product.oa.serviceattr.service.impl.ServiceAttrServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 编号service注入 -->
+    <bean id="hd-product-number-configuration-service"
+          class="com.hd.rcugrc.product.oa.numberConfiguration.service.impl.NumberConfigurationServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="mutableUserInfoService" ref="cachedHdUserService"/>
+    </bean>
+    <bean id="hd-product-oa-doc-number-service"
+          class="com.hd.rcugrc.product.oa.oaDocNumber.service.impl.OaDocNumberServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- 个人日程 -->
+    <bean id="hd-product-oaAgendaManager-service"
+          class="com.hd.rcugrc.product.oa.agendamanager.personal.service.impl.OaAgendaManagerServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- 固定资产servcie注入 -->
+    <bean id="hd-product-assetsOutAllot-service"
+          class="com.hd.rcugrc.product.oa.oafixedAssetsManage.assetsOutAllot.service.impl.AssetsOutAllotServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+
+    </bean>
+    <!-- 固定资产入库servcie注入 -->
+    <bean id="hd-product-assetsAddChrl-service"
+          class="com.hd.rcugrc.product.oa.oafixedAssetsManage.assetsOutAllot.service.impl.AssetsAddChrlServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+
+    </bean>
+    <!-- 固定资产调拨单servcie注入 -->
+    <bean id="hd-product-assetsAllocationSon-service"
+          class="com.hd.rcugrc.product.oa.oafixedAssetsManage.assetsOutAllot.service.impl.AssetsAllocationSonServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+
+    </bean>
+    <!-- 固定资产报废单servcie注入 -->
+    <bean id="hd-product-assetsScrap-service"
+          class="com.hd.rcugrc.product.oa.oafixedAssetsManage.assetsOutAllot.service.impl.AssetsScrapServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+
+    </bean>
+
+    <!-- 通知公告servcie注入 -->
+    <bean id="hd-product-oa-notice-announce-service"
+          class="com.hd.rcugrc.product.oa.noticeAnnounce.service.impl.NoticeAnnounceServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <bean id="noticeRefUserService"
+          class="com.hd.rcugrc.product.oa.noticeAnnounce.service.impl.NoticeRefUserServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 车辆管理servcie注入 -->
+    <bean id="hd-product-oa-car-service"
+          class="com.hd.rcugrc.product.oa.car.service.impl.CarServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <bean id="hd-product-oa-driver-service"
+          class="com.hd.rcugrc.product.oa.car.service.impl.DriverServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <bean id="hd-product-oa-car-reserve-service"
+          class="com.hd.rcugrc.product.oa.car.service.impl.CarReserveServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+
+    <!-- 领导秘书配置 -->
+    <bean id="hd-product-agendaConfig-service"
+          class="com.hd.rcugrc.product.oa.agendamanager.agendaconfig.service.impl.AgendaConfigServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 领导授权配置 -->
+    <bean id="hd-product-oaAgendaAccredit-service"
+          class="com.hd.rcugrc.product.oa.agendamanager.oaagendaaccredit.service.impl.OaAgendaAccreditServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 已办事项 -->
+    <bean id="hd-processed-service"
+          class="com.hd.rcugrc.product.oa.processed.service.impl.ProcessedServiceImpl">
+        <property name="formInfoService" ref="hdFormInfoService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="listEntryWorkflowInfoHandler" ref="hdWorkflowListinfoWorkflowHandler"/>
+        <property name="listEntryAppInfoHandler" ref="hdWorkflowListinfoAppHandler"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="dictService" ref="hdToolsDictService"/>
+        <property name="roleInfoService" ref="cachedHdRoleInfoService"/>
+        <property name="workflowStore" ref="hdWorkflowStoreService"/>
+        <property name="agendaConfigService" ref="hd-product-agendaConfig-service"/>
+        <property name="modelDesignService" ref="hdToolsModelDesignService"/>
+    </bean>
+
+    <!-- 发文servcie注入 -->
+    <bean id="hd-product-dispatch-service"
+          class="com.hd.rcugrc.product.oa.OaDispatchManage.service.impl.OaDispatchManageServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 签报servcie注入 -->
+    <bean id="hd-product-signreport-service"
+          class="com.hd.rcugrc.product.oa.oaSignReport.service.impl.OaSignReportManageServiceImpl">
+        <property name="dataSource" ref="appDataSource"></property>
+    </bean>
+    <!-- 信息简讯servcie注入 -->
+    <bean id="hd-product-sms-service"
+          class="com.hd.rcugrc.product.oa.OaDispatchSms.service.impl.OaSmsServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- 会议室service注入 -->
+    <bean id="hd-product-meeting-service"
+          class="com.hd.rcugrc.product.oa.oaMeetingManage.service.impl.OaMeetingRoomServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <bean id="hd-product-meet-service"
+          class="com.hd.rcugrc.product.oa.oaMeetingManage.service.impl.OaMeetingServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- 委托servcie注入 start -->
+    <bean id="hd-product-entrust-service"
+          class="com.hd.rcugrc.product.oa.entrust.service.impl.OaEntrustServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="todoListService" ref="hdTodolistService"></property>
+        <property name="userInfoService" ref="hdUserInfoService"></property>
+    </bean>
+    <!-- 委托servcie注入 end -->
+
+    <!-- 收文管理service注入start -->
+    <bean id="hd-product-oa-oareceiptmanage-service"
+          class="com.hd.rcugrc.product.oa.oaReceiptManage.service.impl.OaReceiptMangeServiceImpl">
+        <property name="dataSource" ref="appDataSource"></property>
+    </bean>
+    <!-- 收文管理service注入end -->
+    <!-- 低值易耗品入库Service注入 -->
+    <bean id="hd-product-oa-consumableManagementServiceImpl-service"
+          class="com.hd.rcugrc.product.oa.oaConsumableManagement.service.impl.OaConsumableManagementServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 低值易耗品分类 Service注入 -->
+    <bean id="hd-product-oa-lowConsumablesImpl-service"
+          class="com.hd.rcugrc.product.oa.oaConsumableManagement.service.impl.LowConsumablesServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- 低值易耗品物品 Service注入 -->
+    <bean id="hd-product-oa-lowThresholdImpl-service"
+          class="com.hd.rcugrc.product.oa.oaConsumableManagement.service.impl.LowThresholdServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- excel导入Service注入 -->
+    <bean id="hd-oaConsumableManagementImport-service"
+          class="com.hd.rcugrc.product.oa.oaConsumableManagement.service.impl.OaConsumableManagementImportService">
+        <property name="lowThresholdService" ref="hd-product-oa-lowThresholdImpl-service"/>
+        <property name="lowConsumablesService" ref="hd-product-oa-lowConsumablesImpl-service"/>
+        <property name="baseFunctionService" ref="hd-product-oa-common-service"/>
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 低值易耗品领用记录servcie注入 -->
+    <bean id="hd-product-oa-consumablesUseInfoServiceImpl-service"
+          class="com.hd.rcugrc.product.oa.oaConsumableApply.service.impl.ConsumablesUseInfoServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 低值易耗品领用申请子表Service注入 -->
+    <bean id="hd-product-oa-consumableApplyItem-service"
+          class="com.hd.rcugrc.product.oa.oaConsumableApply.service.impl.OaConsumableApplyItemServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 低值易耗品领用申请主表Service注入 -->
+    <bean id="hd-product-oa-consumableApply-service"
+          class="com.hd.rcugrc.product.oa.oaConsumableApply.service.impl.OaConsumableApplyServiceImpl">
+        <property name="consumablesUseInfoService"
+                  ref="hd-product-oa-consumablesUseInfoServiceImpl-service"/>
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 年假配置Service -->
+    <bean id="hd-product-oa-annualLeaveConfigServiceImpl-service"
+          class="com.hd.rcugrc.product.oa.annualleaveconfig.service.impl.AnnualLeaveConfigServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 年假维护service注入 -->
+    <bean id="hd-product-oa-oaholidaymaintain-service"
+          class="com.hd.rcugrc.product.oa.oaHolidayMaintain.service.impl.OaHolidayMaintainServiceImpl">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!-- 请假管理service注入 -->
+    <bean id="hd-product-oa-oaleavemanage-service"
+          class="com.hd.rcugrc.product.oa.oaLeaveManage.service.impl.OaLeaveMangeServiceImpl">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!-- 考勤管理 -->
+    <bean id="hd-product-oa-oaRegister-service" class="com.hd.rcugrc.product.oa.oaLeaveManage.service.impl.OaRegisterServiceImpl">
+        <property name="oaRegisterDao" ref="oaRegisterDao"/>
+        <property name="oaLeaveManageService" ref="hd-product-oa-oaleavemanage-service"/>
+    </bean>
+    <!-- 消息推送配置 -->
+    <bean class="com.hd.rcugrc.product.oa.common.util.MsgPushConfig">
+        <property name="oaBaseFunctionService" ref="hd-product-oa-common-service"/>
+    </bean>
+    <!-- 消息推送 -->
+    <bean id="hd-product-oa-msg-push-service"
+          class="com.hd.rcugrc.product.oa.common.service.impl.OaMsgPushServiceImpl">
+
+    </bean>
+    <!-- 待办监听 -->
+    <bean id="hd-sendtodo-event-listener"
+          class="com.hd.rcugrc.product.oa.common.listener.SendTodoEventListener">
+        <property name="oaMsgPushService" ref="hd-product-oa-msg-push-service"/>
+        <property name="oaTodoService" ref="hd-product-oa-todo-service"/>
+        <property name="thirdNoticeLogService" ref="hd-product-oa-thirdNotice-service"/>
+        <property name="flowService" ref="hdFlowService"/>
+        <property name="workflowService" ref="hdWorkflowService" />
+        <property name="cetcNoticeEnable" value="${cetc.notice.enable}"></property>
+        <property name="userService" ref="cachedHdUserService" />
+        <property name="workFlowForMobileService" ref="workFlowForMobileService"/>
+        <property name="cetcSlowTypeMapping" value="${cetc.slow.type.mapping}"></property>
+    </bean>
+
+    <!-- 上下班维护service注入 -->
+    <bean id="hd-product-timeSetting-service"
+          class="com.hd.rcugrc.product.oa.timeSetting.service.impl.TimeSettingServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 个人常用语维护servcie注入 -->
+    <bean id="hd-product-personPhrase-service"
+          class="com.hd.rcugrc.product.oa.personPhrase.service.impl.PersonPhraseServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- 消息提醒servcie注入 -->
+    <bean id="hd-product-message-remind-service"
+          class="com.hd.rcugrc.product.oa.messageremind.service.impl.OaMessageRemindServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 我的关注 -->
+    <bean id="hd-product-attention-service"
+          class="com.hd.rcugrc.product.oa.oaAttention.service.impl.ProductAttentionServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="userInfoService" ref="userInfoService"/>
+        <!-- <property name="workflowService" ref="workflowService" /> -->
+    </bean>
+    <!-- 机构组 -->
+    <bean id="hd-product-docunit-service"
+          class="com.hd.rcugrc.product.oa.oaDocUnit.service.impl.OaDocUnitServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="userInfoService" ref="userInfoService"/>
+    </bean>
+    <!-- OA权限管理 -->
+    <bean id="oaAuthenticationManager"
+          class="com.hd.rcugrc.product.oa.common.util.OaAuthenticationManager">
+        <property name="userInfoService" ref="userInfoService"/>
+        <property name="roleInfoService" ref="cachedHdRoleInfoService"/>
+        <property name="entityInfoService" ref="hdToolsEntityInfoService"/>
+        <property name="flowService" ref="hdFlowService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="agendaConfigService" ref="hd-product-agendaConfig-service"/>
+        <property name="hierarchyManagerService" ref="hierarchyManagerService"/>
+        <property name="docConfigService" ref="hd-product-oa-doc-config-service"></property>
+    </bean>
+    <!-- 个人组 -->
+    <bean id="hd-product-usergroup-service"
+          class="com.hd.rcugrc.product.oa.oaUserGroups.service.impl.OaUserGroupsServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="userInfoService" ref="userInfoService"/>
+    </bean>
+
+    <!-- 组织结构级别优化 -->
+    <bean id="hd-product-usergrouplev-service"
+          class="com.hd.rcugrc.product.oa.oaUserGroups.service.impl.UserGroupLevServiceImpl">
+        <property name="userService" ref="userService"/>
+        <property name="userGroupService" ref="hdUsergroupService"/>
+        <property name="hierarchySwitchService" ref="hierarchySwitchService"/>
+        <property name="hierarchyManagerService" ref="hierarchyManagerService"/>
+        <property name="hierarchyAuthService" ref="hierarchyAuthService"/>
+        <property name="mutableUserService" ref="cachedHdUserService"/>
+        <property name="roleService" ref="cachedHdRoleService"/>
+        <property name="loginAttemptService" ref="loginAttemptService"/>
+    </bean>
+    <bean id="dwrUserExtendService"
+          class="com.hd.rcugrc.platform.user.dwr.DwrUserExtendServiceImpl">
+        <property name="userService" ref="cachedHdUserService"/>
+        <!-- <property name="roleService" ref="roleService" /> -->
+        <property name="roleService" ref="cachedHdRoleService"/>
+        <property name="tenantService" ref="hdTenantService"/>
+        <property name="loginAttemptService" ref="loginAttemptService"/>
+        <property name="avatarService" ref="hdAvatarService"/>
+        <property name="jsonObjectMapper" ref="hdWorkflowJsonObjectMapper"/>
+        <property name="tmpFileService" ref="hdFormTmpfileService"/>
+        <property name="hierarchyManagerService" ref="hierarchyManagerService"/>
+        <property name="hierarchyAuthService" ref="hierarchyAuthService"/>
+        <property name="hierarchySwitchService" ref="hierarchySwitchService"/>
+    </bean>
+
+
+    <!-- 我的申请 -->
+    <bean id="hd-product-apply-service"
+          class="com.hd.rcugrc.product.oa.apply.service.impl.ApplyServiceImpl">
+        <property name="formInfoService" ref="hdFormInfoService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="formBeanDao" ref="hdFormBeanDao"/>
+        <property name="listEntryWorkflowInfoHandler" ref="hdWorkflowListinfoWorkflowHandler"/>
+        <property name="listEntryAppInfoHandler" ref="hdWorkflowListinfoAppHandler"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="dictService" ref="hdToolsDictService"/>
+        <property name="roleInfoService" ref="cachedHdRoleInfoService"/>
+        <property name="workflowStore" ref="hdWorkflowStoreService"/>
+    </bean>
+    <!-- 自动归档 -->
+    <bean id="hd-ArchiveService"
+          class="com.hd.rcugrc.product.oa.archive.service.impl.ArchiveServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="archiveDataService" ref="hd-ArchiveDataService"></property>
+    </bean>
+    <!-- pdf转换配置 -->
+    <bean id="hd-PdfTurnConfigService"
+          class="com.hd.rcugrc.product.oa.archive.service.impl.PdfTurnConfigServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 已归档数据 -->
+    <bean id="hd-ArchiveDataService"
+          class="com.hd.rcugrc.product.oa.archive.service.impl.ArchiveDataServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="pdfTurnConfigService" ref="hd-PdfTurnConfigService"/>
+        <property name="tmpFileService" ref="hdFormTmpfileService"/>
+        <property name="attachmentService" ref="attachmentService"/>
+        <property name="entityInfoService" ref="hdToolsEntityInfoService"/>
+        <property name="archiveService" ref="hd-ArchiveService"/>
+        <property name="userInfoService" ref="userInfoService"/>
+        <property name="fileInfoService" ref="hdFileInfoService"/>
+        <property name="fileService" ref="hdFormFileService"/>
+        <property name="userAuthService" ref="mobileUserAuthService"/>
+    </bean>
+    <!-- 获取表单意见服务 -->
+    <bean id="hd-product-opinion-service"
+          class="com.hd.rcugrc.product.oa.common.service.impl.OaOpinionServiceImpl">
+        <property name="opinionService" ref="hdFormOpinionService"/>
+        <property name="pageInfoService" ref="hdToolsPageInfoService"/>
+        <property name="flowService" ref="hdFlowService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="userInfoService" ref="userInfoService"/>
+        <property name="roleInfoService" ref="cachedHdRoleInfoService"/>
+    </bean>
+    <!-- 延时归档 -->
+    <bean id="hd-ArchivelaterService"
+          class="com.hd.rcugrc.product.oa.archive.service.impl.ArchivelaterServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="archiveDataService" ref="hd-ArchiveDataService"></property>
+        <property name="userInfoService" ref="cachedHdUserInfoService"></property>
+        <property name="roleInfoService" ref="hdRoleInfoService"></property>
+        <property name="docConfigService" ref="hd-product-oa-doc-config-service"></property>
+    </bean>
+
+    <!-- 公司复制工具 -->
+    <bean id="hd-companycopytools"
+          class="com.hd.rcugrc.product.oa.companycopytools.service.impl.CompanyCopyToolsServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="docConfigService" ref="hd-product-oa-doc-config-service"/>
+        <property name="docBusinessTypeService" ref="hd-product-oa-doc-business-type-service"/>
+        <property name="redheadConfigService" ref="hd-product-oa-redhead-config-service"/>
+        <property name="tmpFileService" ref="hdFormTmpfileService"/>
+        <property name="attachmentService" ref="attachmentService"/>
+        <property name="fileService" ref="hdFormFileService"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="numberConfigurationService" ref="hd-product-number-configuration-service"/>
+        <property name="hierarchySwitchService" ref="hierarchySwitchService"/>
+        <property name="hierarchyAuthService" ref="hierarchyAuthService"/>
+        <property name="jsonObjectMapper" ref="hdWorkflowJsonObjectMapper"/>
+        <property name="flowDesignService" ref="hdToolsFlowDesignService"/>
+    </bean>
+
+    <!-- 领导待办 -->
+    <bean id="hd-product-LeaderTodoListService"
+          class="com.hd.rcugrc.product.oa.leadertodolist.service.impl.OaLeaderTodoListServiceImpl">
+        <property name="lockService" ref="hdWorkflowLockService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="flowService" ref="hdFlowService"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="todoListService" ref="hdTodolistService"/>
+        <property name="orgUserToolsServices" ref="orgUserToolsServices"/>
+        <property name="agendaConfigService" ref="hd-product-agendaConfig-service"/>
+    </bean>
+
+    <!-- 定时任务管理 -->
+    <bean id="hd-product-scheduler-service"
+          class="com.hd.rcugrc.product.oa.oascheduler.service.impl.OaSchedulerServiceImpl">
+
+    </bean>
+
+    <bean id="hd-product-oa-OaOpinion-service"
+          class="com.hd.rcugrc.product.oa.oaOpinionSort.service.impl.OaOpinionSortServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 老OA发文接口 -->
+    <bean id="hd-SendOldoaDispatchService"
+          class="com.hd.rcugrc.product.oa.projectinterface.docinterface.service.impl.SendOldoaDispatchServiceImpl">
+        <property name="ip" value="${allotropy.domino.db.ip}"/>
+        <property name="port" value="${allotropy.domino.db.port}"/>
+        <property name="username" value="${allotropy.domino.db.username}"/>
+        <property name="pwd" value="${allotropy.domino.db.password}"/>
+    </bean>
+    <!-- 蓝信发送service -->
+    <bean id="hd-LanXinService"
+          class="com.hd.rcugrc.product.oa.projectinterface.lanxin.service.impl.LanXinServiceImpl">
+        <property name="userInfoService" ref="userInfoService"/>
+        <property name="agendaConfigService" ref="hd-product-agendaConfig-service"/>
+    </bean>
+
+    <!-- 邮件发送service -->
+    <bean id="hd-MailService"
+          class="com.hd.rcugrc.product.oa.projectinterface.mail.service.impl.MailServiceImpl">
+        <property name="userInfoService" ref="userInfoService"/>
+        <property name="hostname" value="${hd.mail.hostname}"/>
+        <property name="username" value="${hd.mail.username}"/>
+        <property name="password" value="${hd.mail.password}"/>
+        <property name="from" value="${hd.mail.from}"/>
+        <property name="agendaConfigService" ref="hd-product-agendaConfig-service"/>
+    </bean>
+    <!-- 废件箱 -->
+    <bean id="hd-trash-box-service"
+          class="com.hd.rcugrc.product.oa.trashbox.service.impl.TrashBoxServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 二维码 -->
+    <bean id="hd-product-oa-qrcode-service"
+          class="com.hd.rcugrc.product.oa.common.service.impl.QrcodeServiceImpl">
+        <property name="savepath" value="${jquery.fileupload.io.save.path}"/>
+
+    </bean>
+    <bean id="hd-product-pigeonholeTaskService"
+          class="com.hd.rcugrc.product.oa.projectinterface.gd.impl.PigeonholeTaskServiceImpl">
+    </bean>
+    <bean id="hd-product-businessSecretServiceImpl"
+          class="com.hd.rcugrc.product.oa.projectinterface.businessSecret.service.impl.BusinessSecretServiceImpl">
+    </bean>
+
+    <!-- OA待办 -->
+    <bean id="hd-product-oa-todo-service"
+          class="com.hd.rcugrc.product.oa.oatodolist.service.impl.OaTodoServiceImpl">
+        <property name="modelDesignService" ref="hdToolsModelDesignService"/>
+        <property name="oaDoneService" ref="hd-product-oa-done-service"/>
+        <property name="oaMyappService" ref="hd-product-oa-myapp-service"/>
+        <property name="oaMydraftService" ref="hd-product-oa-mydraft-service"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+    </bean>
+    <!-- OA已办 -->
+    <bean id="hd-product-oa-done-service"
+          class="com.hd.rcugrc.product.oa.oadonelist.service.impl.OaDoneServiceImpl">
+        <property name="modelDesignService" ref="hdToolsModelDesignService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+    </bean>
+    <!-- OA我的申请 -->
+    <bean id="hd-product-oa-myapp-service"
+          class="com.hd.rcugrc.product.oa.oamyapplist.service.impl.OaMyappServiceImpl">
+        <property name="modelDesignService" ref="hdToolsModelDesignService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+    </bean>
+    <!-- OA我的草稿 -->
+    <bean id="hd-product-oa-mydraft-service"
+          class="com.hd.rcugrc.product.oa.oamydraftlist.service.impl.OaMydraftServiceImpl">
+        <property name="modelDesignService" ref="hdToolsModelDesignService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="userInfoService" ref="userInfoService"/>
+    </bean>
+
+    <!-- 公文评价记录service注入 -->
+    <bean id="hd-product-oa-evaluationrecord-service"
+          class="com.hd.rcugrc.product.oa.oaevaluationrecord.service.impl.EvaluationRecordServiceImpl">
+
+    </bean>
+    <!-- 公文评价配置service注入 -->
+    <bean id="hd-product-oa-evaluationconfig-service"
+          class="com.hd.rcugrc.product.oa.oaevaluationconfig.service.impl.EvaluationConfigServiceImpl">
+
+    </bean>
+    <!-- SpringUtil类 -->
+    <bean id="hd-product-oa-springutil" class="com.hd.rcugrc.product.oa.common.util.SpringUtil">
+
+    </bean>
+    <!-- WebQueryOpen实现类 -->
+    <bean id="hd-product-oa-webqueryopen" class="com.hd.rcugrc.product.oa.common.util.WebQueryOpenImpl">
+
+    </bean>
+
+    <!-- OaHdDispatchOpen实现类 -->
+    <bean id="hd-product-oa-hdoadispatch"
+          class="com.hd.rcugrc.product.oa.hdoadispatch.open.OaHdDispatchOpenImpl">
+        <property name="hdOaDispatchService" ref="hd-product-hdOaDispatch-service"/>
+    </bean>
+    <!-- OaHdReceiptOpen实现类 -->
+    <bean id="hd-product-oa-hdOaReceipt"
+          class="com.hd.rcugrc.product.oa.oaReceiptManage.open.OaHdReceiptOpenImpl">
+        <property name="oaReceiptManageService" ref="hd-product-oa-oareceiptmanage-service"/>
+    </bean>
+    <!-- OaHdSignReportOpen实现类 -->
+    <bean id="hd-product-oa-hdOaSignReport"
+          class="com.hd.rcugrc.product.oa.oaSignReport.open.OaHdSignReportOpenImpl">
+        <property name="oaSignReportManageService" ref="hd-product-signreport-service"/>
+    </bean>
+    <!-- oa流转日志 -->
+    <bean id="hd-product-oa-custom-flowLogService"
+          class="com.hd.rcugrc.product.oa.workflow.service.impl.OAFlowLogServiceImpl">
+    </bean>
+
+    <!-- 华电发文列表 -->
+    <bean id="hd-product-hdOaDispatch-service"
+          class="com.hd.rcugrc.product.oa.hdoadispatch.service.impl.HdOaDispatchServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 测试提单工具servcie注入 -->
+    <bean id="hd-product-oa-bugInfo-service"
+          class="com.hd.rcugrc.product.oa.bugInfo.service.impl.BugInfoServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="mutableUserInfoService" ref="cachedHdUserService"/>
+    </bean>
+
+    <!-- OA待办AOP实现类 -->
+    <bean id="hd-product-oa-todolistaop-service" class="com.hd.rcugrc.product.oa.oatodolist.aop.OaTodoListAop">
+        <property name="oaTodoService" ref="hd-product-oa-todo-service"/>
+        <property name="oaMydraftService" ref="hd-product-oa-mydraft-service"/>
+    </bean>
+
+    <!-- 周知性公文 -->
+    <!-- <bean id="hd-product-zhouzhigonwen-service"
+        class="com.hd.rcugrc.product.oa.zhouzhiGwProduct.service.impl.ZhouzhiGWServiceImpl">
+        <property name="dataSource" ref="appDataSource" />
+    </bean> -->
+    <!-- 压测初始化servcie注入 -->
+    <bean id="hd-product-oa-initinfo-service"
+          class="com.hd.rcugrc.product.oa.yccsh.service.impl.InitInfoServiceImpl">
+        <property name="dataSource" ref="appDataSource"/>
+        <property name="mutableUserInfoService" ref="cachedHdUserService"/>
+    </bean>
+    <!-- 性能测试代办已办生成配置 -->
+    <bean id="hd-product-oa-havetodo-service"
+          class="com.hd.rcugrc.product.oa.performanceTodo.service.impl.OaHaveTodoServiceImpl">
+    </bean>
+    <bean id="jdbcUtils" class="com.hd.rcugrc.product.oa.performanceTodo.service.JdbcUtils">
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <bean id="configOperService" class="com.hd.rcugrc.product.oa.sysconfigoperlog.service.ConfigOperService">
+        <property name="logService" ref="hdLogService"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="tenantService" ref="hdTenantService"/>
+        <property name="userDeptResolver" ref="hdUserDeptResolver"/>
+    </bean>
+    <!-- 日志配置 -->
+    <bean id="configOperAop" class="com.hd.rcugrc.product.oa.sysconfigoperlog.aop.ConfigOperAop">
+        <property name="logService" ref="hdLogService"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="tenantService" ref="hdTenantService"/>
+        <property name="userDeptResolver" ref="hdUserDeptResolver"/>
+    </bean>
+
+    <!-- 公文配置servcie注入 -->
+    <bean id="hd-product-oa-doc-config-service"
+          class="com.hd.rcugrc.product.oaou.docconfig.service.impl.DocConfigServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换待办service -->
+    <bean id="hd-product-oa-document-todolist-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.todolistservice.impl.DocumentTodoListServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换发送跟踪日志service -->
+    <bean id="hd-product-oa-document-send-log-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.sendlogservice.impl.DocSendLogServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换发送跟踪附件日志service -->
+    <bean id="hd-product-oa-document-log-info-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.sendlogservice.impl.DocSendInfoLogServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换流程处理service -->
+    <bean id="hd-product-oa-document-transform-workflow-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.service.impl.DocumentTransformWorkFlowServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+        <property name="flowService" ref="hdFlowService"/>
+        <property name="formInfoService" ref="hdFormInfoService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="bindingInfoProvider" ref="hdWorkflowBindingInfoProvider"/>
+        <property name="formBeanDao" ref="hdFormBeanDao"/>
+        <property name="sendToReadService" ref="hdFormSendToReadService"/>
+        <property name="userInfoService" ref="cachedHdUserInfoService"/>
+        <property name="controlInfoService" ref="hdToolsPageControlInfoService"/>
+        <property name="securityMetadataSource" ref="hdWorkflowAccessSecuritySource"/>
+        <property name="accessDecisionManager" ref="hdWorkflowAccessDecisionManager"/>
+        <property name="pageInfoService" ref="hdToolsPageInfoService"/>
+        <property name="pageFlowBridge" ref="hdPageFlowBridge"/>
+        <property name="listInfoPopulator" ref="hdWorkflowListinfoPopulator"/>
+        <property name="relatedDocService" ref="hd-product-oa-relateddoc-service"></property>
+        <property name="todoListService" ref="hdTodolistService"/>
+    </bean>
+
+    <!-- 公文交换工具类 -->
+    <bean id="hd-product-oa-document-transform-utils-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.util.DocumentTransformUtils">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换应用信息处理接口 -->
+    <bean id="hd-product-oa-document-transform-application-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.appservice.impl.DocumentTransformApplicationServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换流转日志接口 -->
+    <bean id="hd-product-oa-document-transform-flow-log-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.flowlogservice.impl.DocumentTransformFlowLogServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换附件\正文处理接口 -->
+    <bean id="hd-product-oa-document-transform-attachment-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.attachmentservice.impl.DocumentTransformAttachmentForIndidocServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换发送接口类 -->
+    <bean id="hd-product-oa-document-transform-send-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.sendservice.impl.DocumentTransformSendServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换发送接口类 -->
+    <bean id="hd-product-oa-document-transform-send-single-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.sendservice.impl.DocumentTransformSendForSingleServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换发送接口类 -->
+    <bean id="hd-product-oa-document-heteros-interface-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.documentheterosinterface.impl.DocumentHeterosServiceImpl">
+        <property name="dataSource" ref="ouDataSource"/>
+    </bean>
+
+    <!-- 公文交换流程处理类接口 -->
+    <bean id="hd-product-oa-document-workflowlist-service"
+          class="com.hd.rcugrc.product.oaou.documenttransform.workflowservice.impl.DocumentTransformWorkFlowListServiceImpl">
+        <property name="listService" ref="hdWorkflowListService"/>
+        <property name="userInfoService" ref="hdUserInfoService"/>
+        <property name="workflowService" ref="hdWorkflowService"/>
+        <property name="workflowTrustManager" ref="hdWorkflowTrustManager"/>
+        <property name="workflowLockService" ref="hdWorkflowLockService"/>
+        <property name="flowService" ref="hdFlowService"/>
+        <property name="bindingInfoProvider" ref="hdWorkflowBindingInfoProvider"/>
+        <property name="formInfoService" ref="hdFormInfoService"/>
+        <property name="formBeanDao" ref="hdFormBeanDao"/>
+        <property name="daoLocator" ref="formbeanDaoLocator"/>
+        <property name="jsonObjectMapper" ref="hdWorkflowJsonObjectMapper"/>
+        <property name="listInfoPopulator" ref="hdWorkflowListinfoPopulator"/>
+    </bean>
+
+    <!-- 公文交换发送接口工厂类 -->
+    <bean id="hd-product-oa-document-send-service-factory"
+          class="com.hd.rcugrc.product.oaou.documenttransform.factory.DocumentTransformSendServiceFactory">
+    </bean>
+
+    <!-- 全权限编辑操作日志 -->
+    <bean id="hd-product-oa-fullauthedit-log-service"
+          class="com.hd.rcugrc.product.oa.fullautheditlog.service.impl.FullAuthEditLogServiceImpl">
+    </bean>
+
+    <bean id="hd-product-oa-systemMsg-service" class="com.hd.rcugrc.product.oa.systemMsg.service.impl.SystemMsgServiceImpl">
+        <!--<property name="dataSource" ref="appDataSource"/>-->
+    </bean>
+    <bean id="hd-product-oa-userSettings-service" class="com.hd.rcugrc.product.oa.userSettings.service.impl.UserSettingsServiceImpl">
+        <!--<property name="dataSource" ref="appDataSource"/>-->
+    </bean>
+    <!-- 正文历史记录 -->
+    <bean id="hd-product-attach-process-service"
+          class="com.hd.rcugrc.product.oa.attachProcessFix.service.impl.AttachProcessFixServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    
+    <!-- 接口检查 -->
+    <bean id="hd-product-interface-detect-service"
+          class="com.hd.rcugrc.product.oa.oaInterfaceDetect.service.impl.InterfaceDetectServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    
+    <!-- 文件传阅 -->
+    <bean id="hd-product-docCirculation-service"
+          class="com.hd.rcugrc.product.oa.docCirculation.service.impl.DocCirculationServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    
+     <!-- 首页自定义布局 -->
+    <bean id="homePageLayoutService"
+          class="com.hd.rcugrc.product.oa.homePage.service.impl.HomePageLayoutServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    
+     <!-- 首页自定义布局关联使用表 -->
+    <bean id="homePageUseRelationService"
+          class="com.hd.rcugrc.product.oa.homePage.service.impl.HomePageUseRelationServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    
+    <!-- 电子资料管理表 -->
+     <bean id="materialManagmentService"
+          class="com.hd.rcugrc.product.oa.material.service.impl.MaterialManagmentServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 电子资料管理子表权限分配表 -->
+     <bean id="materialManagmentCeService"
+          class="com.hd.rcugrc.product.oa.material.service.impl.MaterialManagmentCeServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 电子资料分类表 -->
+     <bean id="materialDataTypeService"
+          class="com.hd.rcugrc.product.oa.material.service.impl.MaterialDataTypeServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <!-- 来电登记 -->
+    <bean id="dutyCallRegisterService"
+          class="com.hd.rcugrc.product.oa.oaduty.service.impl.DutyCallRegisterServiceImpl">
+    </bean>
+
+    <bean id="oaWorkInfoService"
+          class="com.hd.rcugrc.product.oa.oaWorkInfo.service.impl.OaWorkInfoServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+
+    <bean id="fileConvertService" class="com.hd.rcugrc.platform.page.widget.form.attachment.services.impl.FileConvertServiceImpl">
+        <property name="userInfoService" ref="userInfoService"/>
+        <property name="attachmentGroupRelationService" ref="attachmentGroupRelationService"/>
+        <property name="attachmentService" ref="attachmentService"/>
+        <property name="fileService" ref="hdFormFileService"/>
+        <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <!-- 备忘录分类表 -->
+     <bean id="memorandumTypeService"
+          class="com.hd.rcugrc.product.oa.memorandum.service.impl.MemorandumTypeServiceImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    <bean id="oaWorkFlowStatisticsService"
+          class="com.hd.rcugrc.product.oa.statistics.service.impl.WorkFlowStatisticsServiceImpl">
+    </bean>
+      <!-- 动态表格业务类 -->
+  <bean id="childTableService" 
+    class="com.hd.rcugrc.product.oa.common.service.impl.ChildTableServiceImpl">
+      <property name="commonUtilsService" ref="commonUtilsService" />
+    <property name="idGenerateService" ref="hd-data-idGenerateS-service" />
+    <property name="entityInfoService" ref="hdToolsEntityInfoService" />
+    <property name="formInfoService" ref="hdFormInfoService" />
+  </bean>
+  
+  	<!-- 里程碑环节实例 -->
+  	<bean id="hd-product-oa-itemMilestoneInst-service" 
+    class="com.hd.rcugrc.product.oa.allinonenet.itemmilestoneinst.service.impl.ItemMilestoneInstServiceImpl">
+  	</bean>
+  	
+  	<!-- 里程碑流程实例 -->
+  	<bean id="oaitemProcessList" 
+    class="com.hd.rcugrc.product.oa.allinonenet.itemprocesslist.service.impl.ItemProcessListServiceImpl">
+  	</bean>
+  
+    <!-- 事项配置 -->
+    <bean id="itemConfigService"
+          class="com.hd.rcugrc.product.oa.allinonenet.itemsconfig.service.impl.ItemConfigServiceImpl">
+          <property name="flowConfigService" ref="flowConfigService"/>
+          <property name="itemProcessService" ref="itemProcessService" />
+          <property name="userInfoService" ref="cachedHdUserInfoService" />
+    </bean>
+    
+     <!-- 事项里程碑配置 -->
+    <bean id="itemMilestoneService"
+          class="com.hd.rcugrc.product.oa.allinonenet.itemsconfig.service.impl.ItemMilestoneServiceImpl">
+    </bean>
+    
+    <!-- 事项配置 -->
+    <bean id="hd-product-oa-itemEvaluation-service"
+          class="com.hd.rcugrc.product.oa.allinonenet.itemevaluation.service.impl.ItemEvaluationServiceImpl">
+          <property name="dataSource" ref="appDataSource" />
+    </bean>
+    
+     <!-- 办件退回配置 -->
+    <bean id="hd-product-oa-itemToBackReason-service"
+          class="com.hd.rcugrc.product.oa.allinonenet.ItemToBackReason.service.impl.ItemToBackReasonImpl">
+          <property name="dataSource" ref="appDataSource"/>
+    </bean>
+    
+    <!-- 里程碑过程接口 -->
+    <bean id="itemProcessService"
+          class="com.hd.rcugrc.product.oa.allinonenet.itemprocesslist.service.impl.ItemProcessServiceImpl">
+          <property name="itemToBackReasonService" ref="hd-product-oa-itemToBackReason-service" />
+          <property name="loginfoIp" value="${hd.integrate.loginfo.ip}" />
+          <property name="ywtbSendDatasPath" value="${hd.integrate.ywtbSendDatas.path}" />
+    </bean>
+    
+    <!-- OA流程配置接口 -->
+    <bean id="flowConfigService"
+          class="com.hd.rcugrc.product.oa.allinonenet.flowconfig.service.impl.FlowConfigServiceImpl">
+          <property name="userInfoService" ref="cachedHdUserInfoService" />
+    </bean>
+    
+    <!-- 用于服务启动待办订阅 -->
+	<!-- 消息推送 -->
+	<bean id="hd-product-todocenter-service"
+		class="com.hd.rcugrc.product.oa.todocenter.service.impl.ToDoCenterServiceImpl">
+		<property name="dictService" ref="hdToolsDictService" />
+	</bean>
+	
+	<bean id="hd-todolistcreate-event-listener"
+		class="com.hd.rcugrc.product.oa.todocenter.listener.TodoListCreatedEventListener">
+		<property name="toDoCenterService" ref="hd-product-todocenter-service" />
+	</bean>
+    
+    <bean id="allinonentHdWorkflowAppService"
+		class="com.hd.rcugrc.product.oa.allinonenet.allinonentHdWorkflow.service.impl.AllinonentHdWorkflowAppServiceImpl">
+	     <property name="allinonentHdWorkflowStore" ref="allinonentHdWorkflowStore" />
+	     <property name="webBindingInitializer" ref="hdFormWebbindingInitializer" />
+	     <property name="flowDefinitionService" ref="hdFlowService" />
+	     <property name="formInfoService" ref="hdFormInfoService" />
+	     <property name="bindingInfoProvider" ref="hdWorkflowBindingInfoProvider" />
+	     <property name="userInfoService" ref="cachedHdUserInfoService" />
+		 <property name="authManager" ref="hdWorkflowAuthService" />
+		 <property name="flowLockService" ref="hdWorkflowLockService" />
+		 <property name="flowRuntimeService" ref="hdWorkflowService" />
+		 <property name="modelInfoService" ref="cachedHdToolsModelInfoService" />
+		 <property name="attachmentService" ref="attachmentService" />
+		 <property name="fileService" ref="hdFormFileService" />
+		 <property name="flowFormBeanDao" ref="hdFormBeanDao" />
+		 <property name="todoListService" ref="hdTodolistService" />
+		 <property name="listDataPopulator" ref="hdWorkflowListinfoPopulator" />
+		 <property name="accessDecisionManager" ref="hdWorkflowAccessDecisionManager" />
+		 <property name="securityMetadataSource" ref="hdWorkflowAccessSecuritySource" />
+		 <property name="pageFlowBridge" ref="hdPageFlowBridge" />
+		 <property name="pageInfoService" ref="hdToolsPageInfoService" />
+		 <property name="operatorResolver" ref="hdWorkflowOperatorResolver" />
+		 <property name="controlInfoService" ref="hdToolsPageControlInfoService" />
+		 <property name="valueConverters" ref="hdFormValueObjectConverters" />
+		 <property name="appInterceptor" ref="hdWorkflowListAppInterceptor" />
+		 <property name="sendToReadService" ref="hdFormSendToReadService" />
+		 <property name="hdOpinionService" ref="hdFormHdOpinionService" />
+		 <property name="hdWorkflowService" ref="hdPlatformWorkflowService" />
+		 <property name="flowInstanceListAppDataHandler" ref="hdWorkflowListinfoAppHandler" />
+		 <property name="hierarchySwitchService" ref="hierarchySwitchService" />
+		 <property name="hdWorkflowAppCfgService" ref="hdWorkflowAppCfgService" />
+		 <property name="workflowTurnToLogService" ref="hdWorkflowTurnToLogService" />
+	</bean>
+	
+	<bean id="allinonentHdWorkflowStore"
+		class="com.hd.rcugrc.product.oa.allinonenet.allinonentHdWorkflow.service.impl.AllinonentHdWorkflowStoreImpl">
+	     <property name="workflowTurnToLogService" ref="hdWorkflowTurnToLogService" />
+	     <property name="flowService" ref="hdFlowService" />
+	     <property name="dataService" ref="hdWorkflowDataService" />
+	     <property name="operatorResolver" ref="hdWorkflowOperatorResolver" />
+	     <property name="authManager" ref="hdWorkflowAuthService" />
+	     <property name="trusteeResolver" ref="hdTrusteeResolver" /> 
+	     <property name="todoListService" ref="hdTodolistService" />
+	</bean>
+	<!-- 一网通办信息公示 -->
+	<bean id="informationShowService"
+		class="com.hd.rcugrc.product.oa.allinonenet.informationShow.service.impl.InformationShowServiceImpl">
+	</bean>
+   <!--  一网通办规章制度 -->
+    <bean id="regulationService"
+		class="com.hd.rcugrc.product.oa.allinonenet.regulation.service.impl.RegulationServiceImpl">
+	</bean>
+   <!--  成员单位网络安全问题整改情况 -->
+    <bean id="savaModificationService"
+		class="com.hd.rcugrc.product.oa.allinonenet.savaModification.service.impl.SavaModificationServiceImpl">
+	</bean>
+   <!--  集团下属单位对外承建系统备案 -->
+    <bean id="groupContractRecordsService"
+		class="com.hd.rcugrc.product.oa.allinonenet.groupContractRecords.service.impl.GroupContractRecordsServiceImpl">
+	</bean>
+   <!--  下属成员单位等保备案定级审批单 -->
+    <bean id="groupContractLevelsService"
+		class="com.hd.rcugrc.product.oa.allinonenet.groupContractLevels.service.impl.GroupContractLevelsServiceImpl">
+	</bean>
+   <!--  军工科研项目_竣工-->
+    <bean id="armyIndustryProjectsService"
+		class="com.hd.rcugrc.product.oa.allinonenet.armyIndustryProjects.service.impl.ArmyIndustryProjectsServiceImpl">
+	</bean>
+    <bean id="loginCetcService"
+		class="com.hd.rcugrc.platform.rest.mobile.service.impl.LoginCetcServiceImpl">
+	     <property name="userInfoUrl" value="${cetc.userInfo.url}" />
+	</bean>
+	
+	<bean id="hd-product-oa-thirdNotice-service" class="com.hd.rcugrc.product.oa.thirdpartynotice.service.impl.ThirdNoticeLogServiceImpl">
+        <!--<property name="dataSource" ref="appDataSource"/>-->
+        <property name="appUrl" value="${cetc.notice.url}"></property>
+        <property name="updateUrl" value="${cetc.notice.update.url}"></property>
+        <property name="countUrl" value="${cetc.notice.count.url}"></property>
+        <property name="taskExecutor">
+        	<bean class="org.springframework.core.task.support.TaskExecutorAdapter">
+        		<constructor-arg>
+        			<bean class="com.hd.rcugrc.product.oa.thirdpartynotice.concurrent.NotifyingBlockingThreadPoolExecutor">
+        				<constructor-arg index="0" value="100"/><!-- pool-size -->
+		        		<constructor-arg index="1" value="100"/><!-- queue-size -->
+		        		<constructor-arg index="2" value="60"/><!-- keep-alive-time -->
+		        		<constructor-arg index="3">
+		        			<bean class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		        				<property name="staticField" value="java.util.concurrent.TimeUnit.SECONDS"/>
+		        			</bean>
+		        		</constructor-arg>
+        			</bean>
+        		</constructor-arg>
+        	</bean>
+        </property>
+    </bean>
+    
+</beans>
